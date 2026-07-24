@@ -39,7 +39,7 @@ nano .env
 
 ### 4. Generate strong secrets
 
-Set `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` to strong, unique values. You can generate them with:
+Set `MYSQL_ROOT_PASSWORD` to a strong, unique value. You can generate it with:
 
 ```bash
 openssl rand -base64 24
@@ -87,7 +87,7 @@ Browse to `https://<your-host>` and log in with the default Zabbix credentials (
 ## Security notes
 
 - **`zabbix-agent` host-level mounts** (`/var/run/docker.sock`, `/proc`, `/sys`, and `/:/hostfs:ro`) give the agent deep visibility into the Docker host — container control surface via `docker.sock`, and read access to host processes and filesystem. This container should never be exposed to untrusted networks, and the `zabbix-net` network should stay internal to the host.
-- **DB credentials** (`MYSQL_ROOT_PASSWORD`, `MYSQL_PASSWORD`) live only in `.env`, which is git-ignored and must never be committed. If you ever commit it by mistake, rotate every credential inside immediately.
+- **DB credentials** (`MYSQL_ROOT_PASSWORD`) live only in `.env`, which is git-ignored and must never be committed. If you ever commit it by mistake, rotate it immediately. Note that `zabbix-server` and `zabbix-web` connect to MySQL as `root` using this password, since there is no separate `zabbix` DB user.
 - **Self-signed TLS** is fine for a local homelab. If you expose this instance beyond `localhost`, replace it with a certificate from a real CA (e.g. Let's Encrypt) and put it behind proper network access controls.
 - **`.env` and `certs/`** are excluded via `.gitignore` and must never be pushed to this or any fork of this repo.
 - **Ports**: only nginx (`80`/`443`) and `zabbix-server`'s trapper port (`10051`, needed for active agent checks) are published. `zabbix-web`'s direct port and the MySQL port are not exposed externally — they're only reachable from other containers on `zabbix-net`.
